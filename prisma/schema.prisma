@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Patient {
+  id                  String    @id @default(cuid())
+  name                String
+  phone               String
+  defaultSessionValue Float
+  meetingLink         String?
+  notes               String?
+  active              Boolean   @default(true)
+  createdAt           DateTime  @default(now())
+  sessions            Session[]
+  expenses            Expense[]
+}
+
+model Session {
+  id                  String        @id @default(cuid())
+  patientId           String
+  date                DateTime
+  time                String
+  status              SessionStatus @default(SCHEDULED)
+  nextSessionReminder String?
+  sessionNotes        String?
+  paymentStatus       PaymentStatus @default(PENDING)
+  paymentMethod       String?
+  amount              Float
+  createdAt           DateTime      @default(now())
+  patient             Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId, date])
+  @@index([date, status])
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  description String
+  amount      Float
+  date        DateTime
+  patientId   String?
+  createdAt   DateTime @default(now())
+  patient     Patient? @relation(fields: [patientId], references: [id], onDelete: SetNull)
+
+  @@index([date])
+  @@index([patientId])
+}
+
+enum SessionStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELED
+}
+
+enum PaymentStatus {
+  PAID
+  PENDING
+}

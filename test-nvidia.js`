@@ -1,0 +1,33 @@
+
+const { createOpenAI } = require('@ai-sdk/openai');
+
+async function testNvidia() {
+  const apiKey = process.env.NVIDIA_API_KEY;
+  if (!apiKey) {
+    console.error("NVIDIA_API_KEY not found in environment");
+    process.exit(1);
+  }
+
+  const nvidia = createOpenAI({
+    apiKey,
+    baseURL: "https://integrate.api.nvidia.com/v1",
+  });
+
+  try {
+    const model = nvidia("meta/llama-3.3-70b-instruct");
+    console.log("Initializing request to meta/llama-3.3-70b-instruct...");
+    
+    const response = await model.doComplete({
+      prompt: "Hello, are you working?",
+      maxTokens: 10,
+    });
+    
+    console.log("Response received:", response);
+    console.log("Connection successful!");
+  } catch (error) {
+    console.error("Connection failed:");
+    console.error(error);
+  }
+}
+
+testNvidia();
