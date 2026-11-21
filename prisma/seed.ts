@@ -11,105 +11,37 @@ async function main() {
   await prisma.session.deleteMany();
   await prisma.patient.deleteMany();
 
-  const [ana, bruno, carla, diego, rosangela] = await Promise.all([
-    prisma.patient.create({
-      data: {
-        name: "Ana Beatriz Souza",
-        phone: "11988887777",
-        defaultSessionValue: 180,
-        notes: "Prefere horários de almoço e confirma por WhatsApp.",
-      },
-    }),
-    prisma.patient.create({
-      data: {
-        name: "Bruno Almeida",
-        phone: "21997776655",
-        defaultSessionValue: 220,
-        notes: "Pode remarcar com frequência.",
-      },
-    }),
-    prisma.patient.create({
-      data: {
-        name: "Carla Menezes",
-        phone: "31996665544",
-        defaultSessionValue: 160,
-        notes: "Paga quinzenalmente.",
-      },
-    }),
-    prisma.patient.create({
-      data: {
-        name: "Diego Martins",
-        phone: "41995554433",
-        defaultSessionValue: 200,
-        notes: "Atendimentos noturnos.",
-      },
-    }),
-    prisma.patient.create({
-      data: {
-        name: "Rosângela de Albuquerque",
-        phone: "11977778888",
-        defaultSessionValue: 200,
-        notes: "Atendimento semanal.",
-      },
-    }),
-  ]);
+  const patient = await prisma.patient.create({
+    data: {
+      name: "Paciente Exemplo",
+      phone: "11999998888",
+      defaultSessionValue: 150,
+      notes: "Paciente para testes de sistema.",
+    },
+  });
 
   await prisma.session.createMany({
     data: [
       {
-        patientId: ana.id,
-        date: makeDate("2026-11-18"),
-        time: "12:00",
-        status: SessionStatus.COMPLETED,
-        paymentStatus: PaymentStatus.PAID,
-        paymentMethod: "Pix",
-        amount: 180,
-        nextSessionReminder: "Retomar exercício de respiração antes do expediente.",
-        sessionNotes: "Boa evolução na rotina de autocuidado.",
+        patientId: patient.id,
+        date: makeDate("2026-11-20"),
+        time: "10:00",
+        status: SessionStatus.SCHEDULED,
+        paymentStatus: PaymentStatus.PENDING,
+        amount: 150,
       },
       {
-        patientId: bruno.id,
-        date: makeDate("2026-11-19"),
+        patientId: patient.id,
+        date: makeDate("2026-11-21"),
         time: "14:00",
-        status: SessionStatus.COMPLETED,
-        paymentStatus: PaymentStatus.PENDING,
-        amount: 220,
-        nextSessionReminder: "Revisar o diário de ansiedade.",
-      },
-      {
-        patientId: rosangela.id,
-        date: makeDate("2026-11-20"),
-        time: "16:00",
         status: SessionStatus.SCHEDULED,
         paymentStatus: PaymentStatus.PENDING,
-        amount: 200,
-      },
-      {
-        patientId: carla.id,
-        date: makeDate("2026-11-20"),
-        time: "18:30",
-        status: SessionStatus.SCHEDULED,
-        paymentStatus: PaymentStatus.PENDING,
-        amount: 160,
-      },
-      {
-        patientId: diego.id,
-        date: makeDate("2026-11-20"),
-        time: "20:00",
-        status: SessionStatus.SCHEDULED,
-        paymentStatus: PaymentStatus.PENDING,
-        amount: 210,
-      },
-      {
-        patientId: ana.id,
-        date: makeDate("2026-11-23"),
-        time: "12:00",
-        status: SessionStatus.SCHEDULED,
-        paymentStatus: PaymentStatus.PENDING,
-        amount: 190,
+        amount: 150,
       },
     ],
   });
+
+  console.log("Seed finalizado com sucesso: 1 paciente e 2 sessões criados.");
 }
 
 main()
